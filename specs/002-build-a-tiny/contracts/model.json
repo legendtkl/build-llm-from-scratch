@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Tiny LLM Model Interface", 
+    "version": "1.0.0",
+    "description": "API contract for LLM training and inference functionality"
+  },
+  "components": {
+    "schemas": {
+      "GenerateRequest": {
+        "type": "object",
+        "required": ["prompt"],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Input text prompt",
+            "example": "The weather today is"
+          },
+          "max_tokens": {
+            "type": "integer",
+            "description": "Maximum tokens to generate",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 200
+          },
+          "temperature": {
+            "type": "number",
+            "description": "Sampling temperature",
+            "default": 0.7,
+            "minimum": 0.1,
+            "maximum": 2.0
+          }
+        }
+      },
+      "GenerateResponse": {
+        "type": "object",
+        "required": ["generated_text", "total_tokens"],
+        "properties": {
+          "generated_text": {
+            "type": "string",
+            "description": "Generated continuation",
+            "example": "beautiful and sunny with clear skies"
+          },
+          "total_tokens": {
+            "type": "integer",
+            "description": "Total tokens in response",
+            "example": 8
+          }
+        }
+      },
+      "TrainRequest": {
+        "type": "object", 
+        "required": ["training_data"],
+        "properties": {
+          "training_data": {
+            "type": "string",
+            "description": "Path to training data file",
+            "example": "data/training.txt"
+          },
+          "epochs": {
+            "type": "integer",
+            "description": "Number of training epochs",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "learning_rate": {
+            "type": "number",
+            "description": "Learning rate for training",
+            "default": 0.001,
+            "minimum": 0.0001,
+            "maximum": 0.1
+          },
+          "batch_size": {
+            "type": "integer",
+            "description": "Training batch size",
+            "default": 32,
+            "minimum": 1,
+            "maximum": 256
+          }
+        }
+      },
+      "TrainResponse": {
+        "type": "object",
+        "required": ["status", "final_loss", "training_time"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["completed", "failed"],
+            "description": "Training completion status"
+          },
+          "final_loss": {
+            "type": "number",
+            "description": "Final training loss value",
+            "example": 2.45
+          },
+          "training_time": {
+            "type": "number",
+            "description": "Training time in seconds",
+            "example": 180.5
+          },
+          "checkpoint_path": {
+            "type": "string",
+            "description": "Path to saved model checkpoint",
+            "example": "models/checkpoint_epoch_10.pt"
+          }
+        }
+      },
+      "ModelInfo": {
+        "type": "object",
+        "required": ["vocab_size", "hidden_dim", "num_layers", "num_heads"],
+        "properties": {
+          "vocab_size": {
+            "type": "integer",
+            "description": "Vocabulary size",
+            "example": 2000
+          },
+          "hidden_dim": {
+            "type": "integer", 
+            "description": "Hidden dimension size",
+            "example": 256
+          },
+          "num_layers": {
+            "type": "integer",
+            "description": "Number of transformer layers",
+            "example": 4
+          },
+          "num_heads": {
+            "type": "integer",
+            "description": "Number of attention heads",
+            "example": 8
+          },
+          "max_seq_len": {
+            "type": "integer",
+            "description": "Maximum sequence length",
+            "example": 128
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/generate": {
+      "post": {
+        "summary": "Generate text continuation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated text",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "500": {
+            "description": "Model inference error"
+          }
+        }
+      }
+    },
+    "/train": {
+      "post": {
+        "summary": "Train the model on provided data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Training completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid training parameters"
+          },
+          "500": {
+            "description": "Training failed"
+          }
+        }
+      }
+    },
+    "/info": {
+      "get": {
+        "summary": "Get model architecture information",
+        "responses": {
+          "200": {
+            "description": "Model information retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

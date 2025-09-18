@@ -41,6 +41,15 @@
 - TensorFlow: More complex API, less intuitive for educational purposes
 - JAX: Too advanced for introductory educational material
 
+## Package Management
+
+**Decision**: Use uv for Python project and dependency management  
+**Rationale**: uv provides fast, reliable dependency resolution and virtual environment management, following modern Python best practices  
+**Alternatives considered**:
+- pip + venv: Standard but slower dependency resolution
+- poetry: Good dependency management but more complex configuration
+- conda: Heavier weight, primarily for data science environments
+
 ## Model Architecture Specification
 
 **Decision**: 2-4 transformer layers, 128-256 hidden dimensions, 4-8 attention heads  

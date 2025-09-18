@@ -1,0 +1,132 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Tokenizer Interface",
+    "version": "1.0.0",
+    "description": "API contract for text tokenization functionality"
+  },
+  "components": {
+    "schemas": {
+      "TokenizeRequest": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Input text to tokenize",
+            "example": "Hello world"
+          }
+        }
+      },
+      "TokenizeResponse": {
+        "type": "object",
+        "required": ["tokens", "token_ids"],
+        "properties": {
+          "tokens": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of text tokens",
+            "example": ["Hello", "world"]
+          },
+          "token_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "List of token IDs",
+            "example": [152, 234]
+          }
+        }
+      },
+      "DecodeRequest": {
+        "type": "object",
+        "required": ["token_ids"],
+        "properties": {
+          "token_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "List of token IDs to decode",
+            "example": [152, 234]
+          }
+        }
+      },
+      "DecodeResponse": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Decoded text",
+            "example": "Hello world"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/tokenize": {
+      "post": {
+        "summary": "Convert text to tokens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenizeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful tokenization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenizeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input text"
+          }
+        }
+      }
+    },
+    "/decode": {
+      "post": {
+        "summary": "Convert token IDs back to text",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecodeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful decoding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecodeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token IDs"
+          }
+        }
+      }
+    }
+  }
+}
